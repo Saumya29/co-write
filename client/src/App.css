@@ -44,7 +44,27 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
+}
+
+.word-count {
+  color: var(--tt-text-secondary, #5f6368);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dark .word-count {
+  color: var(--tt-text-secondary-dark, #9ca3af);
+}
+
+.divider {
+  color: var(--tt-text-secondary, #5f6368);
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.dark .divider {
+  color: var(--tt-text-secondary-dark, #9ca3af);
 }
 
 .document-status {

@@ -14,6 +14,7 @@ import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
 import { Selection } from "@tiptap/extensions"
 import Placeholder from "@tiptap/extension-placeholder"
+import CharacterCount from "@tiptap/extension-character-count"
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button"
@@ -182,7 +183,11 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor() {
+interface SimpleEditorProps {
+  onWordCountChange: (count: number) => void
+}
+
+export function SimpleEditor({ onWordCountChange }: SimpleEditorProps) {
   const isMobile = useIsMobile()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = React.useState<
@@ -238,6 +243,9 @@ export function SimpleEditor() {
         emptyEditorClass: 'is-editor-empty',
         emptyNodeClass: 'is-empty',
       }),
+      CharacterCount.configure({
+        mode: 'textSize',
+      }),
     ],
     content: ''
   })
@@ -252,6 +260,21 @@ export function SimpleEditor() {
       setMobileView("main")
     }
   }, [isMobile, mobileView])
+
+  React.useEffect(() => {
+    if (!editor) return
+    
+    const updateCount = () => {
+      onWordCountChange(editor.storage.characterCount.words())
+    }
+    
+    updateCount()
+    editor.on('update', updateCount)
+    
+    return () => {
+      editor.off('update', updateCount)
+    }
+  }, [editor, onWordCountChange])
 
   return (
     <div className="simple-editor-wrapper">
