@@ -233,15 +233,7 @@ export function SimpleEditor({ onWordCountChange }: SimpleEditorProps) {
         onError: (error) => console.error("Upload failed:", error),
       }),
       Placeholder.configure({
-        placeholder: ({ node }) => {
-          if (node.type.name === 'heading') {
-            return 'What\'s the title?'
-          }
-          return 'Start typing your document...'
-        },
-        includeChildren: true,
-        emptyEditorClass: 'is-editor-empty',
-        emptyNodeClass: 'is-empty',
+        placeholder: 'Write something …',
       }),
       CharacterCount.configure({
         mode: 'textSize',

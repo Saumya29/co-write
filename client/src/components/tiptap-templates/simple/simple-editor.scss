@@ -80,27 +80,9 @@ body,
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
   padding: 3rem;
-  
-  /* Placeholder styles */
-  p.is-empty::before {
-    content: attr(data-placeholder);
-    color: #adb5bd;
-    pointer-events: none;
-    float: left;
-    height: 0;
-  }
-  
-  h1.is-empty::before,
-  h2.is-empty::before,
-  h3.is-empty::before,
-  h4.is-empty::before,
-  h5.is-empty::before,
-  h6.is-empty::before {
-    content: attr(data-placeholder);
-    color: #adb5bd;
-    pointer-events: none;
-    float: left;
-    height: 0;
+  position: relative;
+  .is-empty:not(.is-editor-empty)::before {
+    display: none !important;
   }
 }
 
