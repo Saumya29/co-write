@@ -4,3 +4,60 @@
   margin: 0;
   padding: 0;
 }
+
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background-color: var(--tt-bg-color, #fff);
+  border-bottom: 1px solid var(--tt-border-color, #e0e0e0);
+  flex-shrink: 0;
+}
+
+.dark .app-header {
+  background-color: var(--tt-bg-color-dark, #1a1a1a);
+  border-bottom-color: var(--tt-border-color-dark, #333);
+}
+
+.header-content {
+  padding: 12px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--tt-text-color, #202124);
+}
+
+.dark .app-title {
+  color: var(--tt-text-color-dark, #e8e8e8);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.document-status {
+  color: var(--tt-text-secondary, #5f6368);
+  font-size: 14px;
+}
+
+.dark .document-status {
+  color: var(--tt-text-secondary-dark, #9ca3af);
+}
+
+.editor-container {
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 60px);
+}

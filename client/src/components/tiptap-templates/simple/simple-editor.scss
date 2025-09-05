@@ -62,17 +62,46 @@ body,
 
 .simple-editor-content {
   max-width: 648px;
-  width: 100%;
-  margin: 0 auto;
-  height: 100%;
+  width: calc(100% - 40px);
+  margin: 20px auto 100px;
+  min-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
-  flex: 1;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  
+  .dark & {
+    background-color: var(--tt-bg-color-dark, #1a1a1a);
+    border-color: #444;
+  }
 }
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
-  padding: 3rem 3rem 30vh;
+  padding: 3rem;
+  
+  /* Placeholder styles */
+  p.is-empty::before {
+    content: attr(data-placeholder);
+    color: #adb5bd;
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
+  
+  h1.is-empty::before,
+  h2.is-empty::before,
+  h3.is-empty::before,
+  h4.is-empty::before,
+  h5.is-empty::before,
+  h6.is-empty::before {
+    content: attr(data-placeholder);
+    color: #adb5bd;
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
 }
 
 @media screen and (max-width: 480px) {
