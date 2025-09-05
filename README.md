@@ -60,7 +60,7 @@ The server will run on `http://localhost:4000`
 
 ### FEATURE-1: Online Editing Environment
 - [x] TipTap editor with rich text capabilities
-- [ ] Live word counter
+- [x] Live word counter
 
 ### FEATURE-2: Collaboration
 - [ ] ProseMirror collab plugin integration
