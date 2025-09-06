@@ -63,10 +63,11 @@ The server will run on `http://localhost:4000`
 - [x] Live word counter
 
 ### FEATURE-2: Collaboration
-- [ ] ProseMirror collab plugin integration
-- [ ] Backend API endpoints for collaboration
-- [ ] Step synchronization between clients
-- [ ] Document state catch-up on reload
+- [x] ProseMirror collab plugin integration
+- [x] Backend API endpoints for collaboration
+- [x] Step synchronization between clients
+- [x] Document state catch-up on reload
+- [ ] Debounce the sending of steps (optional)
 
 ### FEATURE-3: Persistence
 - [ ] Step storage across server restarts
@@ -74,11 +75,10 @@ The server will run on `http://localhost:4000`
 
 ## API Endpoints
 
-(To be implemented)
-
-- `GET /steps/:version` - Get steps since version
-- `POST /steps` - Submit new steps
-- `GET /document` - Get current document state
+- `GET /api/events?version={n}` - Get steps since version n
+- `POST /api/events` - Submit new steps (body: {version, steps, clientID})
+- `GET /api/version` - Get current version
+- `GET /health` - Health check
 
 ## Notes
 

@@ -65,12 +65,15 @@ import { LinkIcon } from "@/components/tiptap-icons/link-icon"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useWindowSize } from "@/hooks/use-window-size"
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
+import { useCollaboration } from "@/hooks/use-collaboration"
 
 // --- Components ---
 import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle"
 
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
+import { generateClientID } from "@/utils/collaboration"
+import { ProseMirrorCollab } from "@/extensions/prosemirror-collab"
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss"
@@ -194,6 +197,7 @@ export function SimpleEditor({ onWordCountChange }: SimpleEditorProps) {
     "main" | "highlighter" | "link"
   >("main")
   const toolbarRef = React.useRef<HTMLDivElement>(null)
+  const clientID = React.useMemo(() => generateClientID(), [])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -238,6 +242,10 @@ export function SimpleEditor({ onWordCountChange }: SimpleEditorProps) {
       CharacterCount.configure({
         mode: 'textSize',
       }),
+      ProseMirrorCollab.configure({
+        version: 0,
+        clientID,
+      }),
     ],
     content: ''
   })
@@ -246,6 +254,8 @@ export function SimpleEditor({ onWordCountChange }: SimpleEditorProps) {
     editor,
     overlayHeight: toolbarRef.current?.getBoundingClientRect().height ?? 0,
   })
+
+  useCollaboration(editor, clientID)
 
   React.useEffect(() => {
     if (!isMobile && mobileView !== "main") {
