@@ -71,7 +71,7 @@ The server will run on `http://localhost:4000`
 - [x] Backend API endpoints for collaboration
 - [x] Step synchronization between clients
 - [x] Document state catch-up on reload
-- [] Debounce the sending of steps (optional)
+- [x] Debounce the sending of steps (optional)
 
 ### FEATURE-3: Persistence
 

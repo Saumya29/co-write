@@ -7,6 +7,7 @@ import {isErrorWithStatus} from '@/types/collaboration';
 
 export function useCollaboration(editor: Editor | null, clientID: string) {
   const isPollingRef = useRef(false);
+  const sendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!editor) return;
@@ -53,6 +54,11 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
       }
     };
 
+    const debouncedSendSteps = () => {
+      if (sendTimeoutRef.current) clearTimeout(sendTimeoutRef.current);
+      sendTimeoutRef.current = setTimeout(sendSteps, 1000);
+    };
+
     const pullSteps = async (fromVersion?: number) => {
       if (isPollingRef.current) return;
       isPollingRef.current = true;
@@ -73,16 +79,17 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
 
     const sync = async () => {
       await pullSteps();
-      await sendSteps();
+      debouncedSendSteps();
     };
 
     let intervalId: NodeJS.Timeout;
     pullSteps(0).then(() => {
-      intervalId = setInterval(sync, 1000);
+      intervalId = setInterval(sync, 2000);
     });
 
     return () => {
       if (intervalId) clearInterval(intervalId);
+      if (sendTimeoutRef.current) clearTimeout(sendTimeoutRef.current);
     };
   }, [editor, clientID]);
 }
