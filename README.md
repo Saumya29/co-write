@@ -70,8 +70,9 @@ The server will run on `http://localhost:4000`
 - [ ] Debounce the sending of steps (optional)
 
 ### FEATURE-3: Persistence
-- [ ] Step storage across server restarts
-- [ ] Ordered step validation
+- [x] Step storage across server restarts (file-based: `server/data/state.json`)
+- [x] Ordered step validation
+- [x] Automatic state recovery on server startup
 
 ## API Endpoints
 
@@ -79,6 +80,19 @@ The server will run on `http://localhost:4000`
 - `POST /api/events` - Submit new steps (body: {version, steps, clientID})
 - `GET /api/version` - Get current version
 - `GET /health` - Health check
+
+## Persistence & Scaling
+
+### Current Implementation
+- File-based persistence (`server/data/state.json`)
+- Steps survive server restarts
+- Single server architecture
+
+### Production Recommendations
+For horizontal scaling with multiple servers:
+- **Redis**: Real-time collaboration data
+- **PostgreSQL/MongoDB**: Historical step storage
+- **Message Queue**: Inter-server communication
 
 ## Notes
 

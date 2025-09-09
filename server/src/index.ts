@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import routes from './routes.js'
+import { initialize } from './modules/collaboration/index.js'
 
 const app = express()
 const PORT = 4000
@@ -13,6 +14,8 @@ app.get('/health', (_, res) => {
 })
 
 app.use('/api', routes)
+
+await initialize()
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

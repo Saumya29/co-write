@@ -11,6 +11,29 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
   useEffect(() => {
     if (!editor) return
 
+    const applySteps = (steps: unknown[], clientIDs: string[]) => {
+      const { state, view } = editor
+      const validSteps = []
+      
+      for (const stepData of steps) {
+        try {
+          validSteps.push(Step.fromJSON(state.schema, stepData))
+        } catch (e) {
+          console.error('Invalid step, skipping:', e)
+        }
+      }
+      
+      if (validSteps.length > 0) {
+        const transaction = receiveTransaction(
+          state,
+          validSteps,
+          clientIDs.slice(0, validSteps.length),
+          { mapSelectionBackward: true }
+        )
+        view.dispatch(transaction)
+      }
+    }
+
     const sendSteps = async () => {
       const sendable = sendableSteps(editor.state)
       if (!sendable) return
@@ -30,23 +53,16 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
       }
     }
 
-    const pullSteps = async () => {
+    const pullSteps = async (fromVersion?: number) => {
       if (isPollingRef.current) return
       isPollingRef.current = true
 
       try {
-        const version = getVersion(editor.state)
+        const version = fromVersion ?? getVersion(editor.state)
         const events = await api.fetchEvents(version)
         
-        if (events.steps.length > 0) {
-          const { state, view } = editor
-          const transaction = receiveTransaction(
-            state,
-            events.steps.map((s) => Step.fromJSON(state.schema, s)),
-            events.clientIDs,
-            { mapSelectionBackward: true }
-          )
-          view.dispatch(transaction)
+        if (events.steps?.length > 0) {
+          applySteps(events.steps, events.clientIDs)
         }
       } catch (error) {
         console.error('Failed to pull steps:', error)
@@ -60,11 +76,13 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
       await sendSteps()
     }
 
-    sync()
-    const intervalId = setInterval(sync, 1000)
+    let intervalId: NodeJS.Timeout
+    pullSteps(0).then(() => {
+      intervalId = setInterval(sync, 1000)
+    })
 
     return () => {
-      clearInterval(intervalId)
+      if (intervalId) clearInterval(intervalId)
     }
   }, [editor, clientID])
 }
