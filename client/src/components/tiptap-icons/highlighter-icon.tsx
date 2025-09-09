@@ -1,7 +1,7 @@
-import * as React from "react"
+import * as React from 'react';
 
 export const HighlighterIcon = React.memo(
-  ({ className, ...props }: React.SVGProps<SVGSVGElement>) => {
+  ({className, ...props}: React.SVGProps<SVGSVGElement>) => {
     return (
       <svg
         width="24"
@@ -19,8 +19,8 @@ export const HighlighterIcon = React.memo(
           fill="currentColor"
         />
       </svg>
-    )
+    );
   }
-)
+);
 
-HighlighterIcon.displayName = "HighlighterIcon"
+HighlighterIcon.displayName = 'HighlighterIcon';

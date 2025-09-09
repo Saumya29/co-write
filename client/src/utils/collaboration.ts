@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid'
+import {nanoid} from 'nanoid';
 
 export function generateClientID(): string {
-  return nanoid(8)
+  return nanoid(8);
 }

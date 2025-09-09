@@ -1,16 +1,16 @@
 export interface ErrorWithStatus {
-  status: number
-  [key: string]: unknown
+  status: number;
+  [key: string]: unknown;
 }
 
 export interface CollaborationEvents {
-  version: number
-  steps: unknown[]
-  clientIDs: string[]
+  version: number;
+  steps: unknown[];
+  clientIDs: string[];
 }
 
 export interface CollaborationVersion {
-  version: number
+  version: number;
 }
 
 export function isErrorWithStatus(error: unknown): error is ErrorWithStatus {
@@ -19,5 +19,5 @@ export function isErrorWithStatus(error: unknown): error is ErrorWithStatus {
     error !== null &&
     'status' in error &&
     typeof (error as ErrorWithStatus).status === 'number'
-  )
+  );
 }

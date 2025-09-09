@@ -1,7 +1,7 @@
-import * as React from "react"
+import * as React from 'react';
 
 export const AlignJustifyIcon = React.memo(
-  ({ className, ...props }: React.SVGProps<SVGSVGElement>) => {
+  ({className, ...props}: React.SVGProps<SVGSVGElement>) => {
     return (
       <svg
         width="24"
@@ -31,8 +31,8 @@ export const AlignJustifyIcon = React.memo(
           fill="currentColor"
         />
       </svg>
-    )
+    );
   }
-)
+);
 
-AlignJustifyIcon.displayName = "AlignJustifyIcon"
+AlignJustifyIcon.displayName = 'AlignJustifyIcon';

@@ -1,88 +1,88 @@
-import { useEffect, useRef } from 'react'
-import { Editor } from '@tiptap/react'
-import { sendableSteps, receiveTransaction, getVersion } from 'prosemirror-collab'
-import { Step } from 'prosemirror-transform'
-import * as api from '@/api/collaboration'
-import { isErrorWithStatus } from '@/types/collaboration'
+import {useEffect, useRef} from 'react';
+import {Editor} from '@tiptap/react';
+import {sendableSteps, receiveTransaction, getVersion} from 'prosemirror-collab';
+import {Step} from 'prosemirror-transform';
+import * as api from '@/api/collaboration';
+import {isErrorWithStatus} from '@/types/collaboration';
 
 export function useCollaboration(editor: Editor | null, clientID: string) {
-  const isPollingRef = useRef(false)
+  const isPollingRef = useRef(false);
 
   useEffect(() => {
-    if (!editor) return
+    if (!editor) return;
 
     const applySteps = (steps: unknown[], clientIDs: string[]) => {
-      const { state, view } = editor
-      const validSteps = []
-      
+      const {state, view} = editor;
+      const validSteps = [];
+
       for (const stepData of steps) {
         try {
-          validSteps.push(Step.fromJSON(state.schema, stepData))
+          validSteps.push(Step.fromJSON(state.schema, stepData));
         } catch (e) {
-          console.error('Invalid step, skipping:', e)
+          console.error('Invalid step, skipping:', e);
         }
       }
-      
+
       if (validSteps.length > 0) {
         const transaction = receiveTransaction(
           state,
           validSteps,
           clientIDs.slice(0, validSteps.length),
-          { mapSelectionBackward: true }
-        )
-        view.dispatch(transaction)
+          {mapSelectionBackward: true}
+        );
+        view.dispatch(transaction);
       }
-    }
+    };
 
     const sendSteps = async () => {
-      const sendable = sendableSteps(editor.state)
-      if (!sendable) return
+      const sendable = sendableSteps(editor.state);
+      if (!sendable) return;
 
       try {
         await api.postEvents(
           sendable.version,
           sendable.steps?.map(s => s.toJSON()) || [],
           clientID
-        )
+        );
       } catch (error) {
         if (isErrorWithStatus(error) && error.status === 409) {
-          await pullSteps()
+          await pullSteps();
         } else {
-          console.error('Failed to send steps:', error)
+          console.error('Failed to send steps:', error);
         }
       }
-    }
+    };
 
     const pullSteps = async (fromVersion?: number) => {
-      if (isPollingRef.current) return
-      isPollingRef.current = true
+      if (isPollingRef.current) return;
+      isPollingRef.current = true;
 
       try {
-        const version = fromVersion ?? getVersion(editor.state)
-        const events = await api.fetchEvents(version)
-        
+        const version = fromVersion ?? getVersion(editor.state);
+        const events = await api.fetchEvents(version);
+
         if (events.steps?.length > 0) {
-          applySteps(events.steps, events.clientIDs)
+          applySteps(events.steps, events.clientIDs);
         }
       } catch (error) {
-        console.error('Failed to pull steps:', error)
+        console.error('Failed to pull steps:', error);
       } finally {
-        isPollingRef.current = false
+        isPollingRef.current = false;
       }
-    }
+    };
 
     const sync = async () => {
-      await pullSteps()
-      await sendSteps()
-    }
+      await pullSteps();
+      await sendSteps();
+    };
 
-    let intervalId: NodeJS.Timeout
+    let intervalId: NodeJS.Timeout;
     pullSteps(0).then(() => {
-      intervalId = setInterval(sync, 1000)
-    })
+      intervalId = setInterval(sync, 1000);
+    });
 
     return () => {
-      if (intervalId) clearInterval(intervalId)
-    }
-  }, [editor, clientID])
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [editor, clientID]);
 }

@@ -1,7 +1,7 @@
-import * as React from "react"
+import * as React from 'react';
 
 export const SuperscriptIcon = React.memo(
-  ({ className, ...props }: React.SVGProps<SVGSVGElement>) => {
+  ({className, ...props}: React.SVGProps<SVGSVGElement>) => {
     return (
       <svg
         width="24"
@@ -31,8 +31,8 @@ export const SuperscriptIcon = React.memo(
           fill="currentColor"
         />
       </svg>
-    )
+    );
   }
-)
+);
 
-SuperscriptIcon.displayName = "SuperscriptIcon"
+SuperscriptIcon.displayName = 'SuperscriptIcon';

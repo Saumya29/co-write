@@ -1,22 +1,22 @@
-import express from 'express'
-import cors from 'cors'
-import routes from './routes.js'
-import { initialize } from './modules/collaboration/index.js'
+import express from 'express';
+import cors from 'cors';
+import routes from './routes.js';
+import {initialize} from './modules/collaboration/index.js';
 
-const app = express()
-const PORT = 4000
+const app = express();
+const PORT = 4000;
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 app.get('/health', (_, res) => {
-  res.json({ status: 'ok' })
-})
+  res.json({status: 'ok'});
+});
 
-app.use('/api', routes)
+app.use('/api', routes);
 
-await initialize()
+await initialize();
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
-})
+  console.log(`Server running on http://localhost:${PORT}`);
+});

@@ -1,9 +1,9 @@
-import { Extension } from '@tiptap/core'
-import { collab } from 'prosemirror-collab'
+import {Extension} from '@tiptap/core';
+import {collab} from 'prosemirror-collab';
 
 export interface CollabOptions {
-  version: number
-  clientID: string
+  version: number;
+  clientID: string;
 }
 
 export const ProseMirrorCollab = Extension.create<CollabOptions>({
@@ -13,17 +13,17 @@ export const ProseMirrorCollab = Extension.create<CollabOptions>({
     return {
       version: 0,
       clientID: '',
-    }
+    };
   },
 
   addProseMirrorPlugins() {
-    const { version, clientID } = this.options
-    
+    const {version, clientID} = this.options;
+
     return [
       collab({
         version,
         clientID,
       }),
-    ]
+    ];
   },
-})
+});

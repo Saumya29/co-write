@@ -1,7 +1,7 @@
-import * as React from "react"
+import * as React from 'react';
 
 export const ListOrderedIcon = React.memo(
-  ({ className, ...props }: React.SVGProps<SVGSVGElement>) => {
+  ({className, ...props}: React.SVGProps<SVGSVGElement>) => {
     return (
       <svg
         width="24"
@@ -49,8 +49,8 @@ export const ListOrderedIcon = React.memo(
           fill="currentColor"
         />
       </svg>
-    )
+    );
   }
-)
+);
 
-ListOrderedIcon.displayName = "ListOrderedIcon"
+ListOrderedIcon.displayName = 'ListOrderedIcon';

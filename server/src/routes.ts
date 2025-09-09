@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { collabRoutes } from './modules/collaboration/index.js'
+import {Router} from 'express';
+import {collabRoutes} from './modules/collaboration/index.js';
 
-const router = Router()
+const router = Router();
 
-router.use('/', collabRoutes)
+router.use('/', collabRoutes);
 
-export default router
+export default router;
