@@ -3,6 +3,7 @@
 ## Current Implementation
 
 **File-based persistence** at `server/data/state.json`
+
 - Auto-loads on server start
 - Saves on every POST `/api/events`
 - Zero configuration required
@@ -24,13 +25,14 @@ npm run dev
 
 ### Production Options
 
-| Solution | Use Case | Latency | Scale |
-|----------|----------|---------|-------|
-| **Redis** | Real-time collab | <1ms | High |
-| **PostgreSQL** | History/audit | ~5ms | Medium |
-| **MongoDB** | Document storage | ~3ms | High |
+| Solution       | Use Case         | Latency | Scale  |
+| -------------- | ---------------- | ------- | ------ |
+| **Redis**      | Real-time collab | <1ms    | High   |
+| **PostgreSQL** | History/audit    | ~5ms    | Medium |
+| **MongoDB**    | Document storage | ~3ms    | High   |
 
 ### Recommended Architecture
+
 ```
 Redis (hot data) + PostgreSQL (cold storage)
 - Redis: Active sessions, recent steps
@@ -50,7 +52,7 @@ export async function appendEvents(steps, clientIDs) {
 
 // Future: Just change the implementation
 export async function appendEvents(steps, clientIDs) {
-  await redis.rpush('steps', JSON.stringify(steps))
+  await redis.rpush('steps', JSON.stringify(steps));
 }
 ```
 

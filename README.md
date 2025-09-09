@@ -47,11 +47,13 @@ The server will run on `http://localhost:4000`
 ## Development
 
 ### Client
+
 - Built with React + TypeScript
 - Uses TipTap editor framework (ProseMirror-based)
 - Vite for development and building
 
 ### Server
+
 - Node.js + TypeScript
 - WebSocket/HTTP API for collaboration
 - File-based or in-memory persistence
@@ -59,17 +61,20 @@ The server will run on `http://localhost:4000`
 ## Implementation Status
 
 ### FEATURE-1: Online Editing Environment
+
 - [x] TipTap editor with rich text capabilities
 - [x] Live word counter
 
 ### FEATURE-2: Collaboration
+
 - [x] ProseMirror collab plugin integration
 - [x] Backend API endpoints for collaboration
 - [x] Step synchronization between clients
 - [x] Document state catch-up on reload
-- [ ] Debounce the sending of steps (optional)
+- [] Debounce the sending of steps (optional)
 
 ### FEATURE-3: Persistence
+
 - [x] Step storage across server restarts (file-based: `server/data/state.json`)
 - [x] Ordered step validation
 - [x] Automatic state recovery on server startup
@@ -84,12 +89,15 @@ The server will run on `http://localhost:4000`
 ## Persistence & Scaling
 
 ### Current Implementation
+
 - File-based persistence (`server/data/state.json`)
 - Steps survive server restarts
 - Single server architecture
 
 ### Production Recommendations
+
 For horizontal scaling with multiple servers:
+
 - **Redis**: Real-time collaboration data
 - **PostgreSQL/MongoDB**: Historical step storage
 - **Message Queue**: Inter-server communication
