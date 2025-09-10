@@ -34,16 +34,17 @@ Real-time collaborative text editor built with React, TypeScript, and TipTap (Pr
 
 ```
 client/
-└── src/
-    ├── api/              # API client for collaboration endpoints
-    ├── components/       # React components
-    │   └── tiptap-templates/  # Editor UI components
-    ├── extensions/       # TipTap/ProseMirror extensions
-    ├── hooks/           # Custom React hooks
-    │   └── use-collaboration.ts  # Core collaboration logic
-    ├── lib/             # Utility functions
-    ├── types/           # TypeScript type definitions
-    └── utils/           # Helper functions
+├── src/
+│   ├── api/              # API client for collaboration endpoints
+│   ├── components/       # React components
+│   │   └── tiptap-templates/  # Editor UI components
+│   ├── extensions/       # TipTap/ProseMirror extensions
+│   ├── hooks/           # Custom React hooks
+│   │   └── use-collaboration.ts  # Core collaboration logic
+│   ├── lib/             # Utility functions
+│   ├── types/           # TypeScript type definitions
+│   └── utils/           # Helper functions
+└── public/              # Static assets
 ```
 
 ## Key Components
