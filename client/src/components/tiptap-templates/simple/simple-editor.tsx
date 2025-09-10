@@ -6,6 +6,7 @@ import {EditorContent, EditorContext, useEditor} from '@tiptap/react';
 // --- Tiptap Core Extensions ---
 import {StarterKit} from '@tiptap/starter-kit';
 import {Image} from '@tiptap/extension-image';
+import {Link} from '@tiptap/extension-link';
 import {TaskItem, TaskList} from '@tiptap/extension-list';
 import {TextAlign} from '@tiptap/extension-text-align';
 import {Typography} from '@tiptap/extension-typography';
@@ -197,9 +198,14 @@ export function SimpleEditor({onWordCountChange}: SimpleEditorProps) {
     extensions: [
       StarterKit.configure({
         horizontalRule: false,
-        link: {
-          openOnClick: false,
-          enableClickSelection: true,
+      }),
+      Link.configure({
+        openOnClick: false,
+        linkOnPaste: true,
+        autolink: true,
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer nofollow',
         },
       }),
       HorizontalRule,
