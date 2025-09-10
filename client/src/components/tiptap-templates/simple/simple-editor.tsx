@@ -207,7 +207,13 @@ export function SimpleEditor({onWordCountChange}: SimpleEditorProps) {
       TaskList,
       TaskItem.configure({nested: true}),
       Highlight.configure({multicolor: true}),
-      Image,
+      Image.configure({
+        HTMLAttributes: {
+          class: 'tiptap-image',
+        },
+        inline: false,
+        allowBase64: true,
+      }),
       Typography,
       Superscript,
       Subscript,

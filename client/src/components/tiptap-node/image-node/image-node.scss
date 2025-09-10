@@ -3,6 +3,14 @@
     max-width: 100%;
     height: auto;
     display: block;
+    object-fit: contain;
+  }
+
+  img.tiptap-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
   }
 
   > img:not([data-type='emoji'] img) {
