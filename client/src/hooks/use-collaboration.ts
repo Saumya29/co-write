@@ -56,7 +56,7 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
 
     const debouncedSendSteps = () => {
       if (sendTimeoutRef.current) clearTimeout(sendTimeoutRef.current);
-      sendTimeoutRef.current = setTimeout(sendSteps, 1000);
+      sendTimeoutRef.current = setTimeout(sendSteps, 300);
     };
 
     const pullSteps = async (fromVersion?: number) => {
@@ -84,7 +84,7 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
 
     let intervalId: NodeJS.Timeout;
     pullSteps(0).then(() => {
-      intervalId = setInterval(sync, 2000);
+      intervalId = setInterval(sync, 1000);
     });
 
     return () => {
