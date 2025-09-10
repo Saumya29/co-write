@@ -181,13 +181,11 @@ export function useColorHighlight(config: UseColorHighlightConfig) {
       }
     }
 
-    setTimeout(() => {
-      const success = editor.chain().focus().toggleMark('highlight', {color: highlightColor}).run();
-      if (success) {
-        onApplied?.({color: highlightColor, label});
-      }
-      return success;
-    }, 0);
+    const success = editor.chain().focus().toggleMark('highlight', {color: highlightColor}).run();
+    if (success) {
+      onApplied?.({color: highlightColor, label});
+    }
+    return success;
   }, [canColorHighlightState, highlightColor, editor, label, onApplied]);
 
   const handleRemoveHighlight = React.useCallback(() => {
