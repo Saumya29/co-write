@@ -8,6 +8,8 @@ import {isErrorWithStatus} from '@/types/collaboration';
 export function useCollaboration(editor: Editor | null, clientID: string) {
   const isPollingRef = useRef(false);
   const sendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasInitializedRef = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!editor) return;
@@ -82,14 +84,24 @@ export function useCollaboration(editor: Editor | null, clientID: string) {
       debouncedSendSteps();
     };
 
-    let intervalId: NodeJS.Timeout;
-    pullSteps(0).then(() => {
-      intervalId = setInterval(sync, 1000);
-    });
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-      if (sendTimeoutRef.current) clearTimeout(sendTimeoutRef.current);
-    };
+    // Only initialize once
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+      pullSteps(0).then(() => {
+        intervalRef.current = setInterval(sync, 1000);
+      });
+    }
   }, [editor, clientID]);
+
+  // Cleanup effect: only runs on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (sendTimeoutRef.current) {
+        clearTimeout(sendTimeoutRef.current);
+      }
+    };
+  }, []);
 }
