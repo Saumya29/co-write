@@ -1,69 +1,90 @@
-# React + TypeScript + Vite
+# Collaborative Editor Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Real-time collaborative text editor built with React, TypeScript, and TipTap (ProseMirror).
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **TipTap/ProseMirror** - Rich text editing engine
+- **ProseMirror Collab** - Operational transformation for real-time collaboration
+- **Vite** - Build tool with HMR
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Rich text editing with full formatting options (based on TipTap's SimpleEditor template)
+- Real-time collaborative editing
+- Live word count
+- Persistent document state
+- Automatic reconnection and sync
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## TipTap Extensions Used
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **StarterKit**: Basic editing features (bold, italic, lists, headings, etc.)
+- **CharacterCount**: Provides live word and character counting (using TipTap's built-in extension for accuracy and performance instead of custom implementation)
+- **Placeholder**: Shows placeholder text when editor is empty
+- **TextAlign**: Text alignment controls
+- **Highlight**: Text highlighting capability
+- **Typography**: Smart quotes and typographic improvements
+- **Image**: Image support with upload handling
+- **Subscript/Superscript**: Scientific notation support
+- **ProseMirrorCollab**: Custom extension for collaboration with version tracking
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+## Project Structure
+
+```
+client/
+└── src/
+    ├── api/              # API client for collaboration endpoints
+    ├── components/       # React components
+    │   └── tiptap-templates/  # Editor UI components
+    ├── extensions/       # TipTap/ProseMirror extensions
+    ├── hooks/           # Custom React hooks
+    │   └── use-collaboration.ts  # Core collaboration logic
+    ├── lib/             # Utility functions
+    ├── types/           # TypeScript type definitions
+    └── utils/           # Helper functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Key Components
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+### `use-collaboration.ts`
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+Handles the real-time collaboration logic:
+
+- Syncs document state with server
+- Applies remote changes via operational transformation
+- Debounces local changes before sending (300ms)
+- Only sends steps when there are actual changes
+- Manages version tracking to prevent duplicates
+
+### `ProseMirrorCollab` Extension
+
+Integrates ProseMirror's collaboration plugin with TipTap for version tracking and step management.
+
+### Client ID
+
+Uses `nanoid` to generate unique client IDs for each session - lightweight and collision-resistant, helps track which client sent which steps.
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run linting
+npm run lint
+
+# Format code
+npm run format
 ```
+
+## Environment
+
+The client connects to the backend API at `http://localhost:4000` by default. Update the API endpoints in `src/api/collaboration.ts` if your server runs on a different port.

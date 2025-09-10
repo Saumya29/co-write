@@ -7,7 +7,9 @@ A real-time collaborative text editor built with ProseMirror/TipTap and a backen
 ```
 cadmus-editor/
 ├── client/          # React + TypeScript + TipTap editor
+│   └── README.md    # Detailed client implementation docs
 └── server/          # Backend API server (TypeScript/Node.js)
+    └── PERSISTENCE_SETUP.md  # Persistence testing guide
 ```
 
 ## Features
@@ -19,7 +21,7 @@ cadmus-editor/
 
 ## Requirements
 
-- Node.js (v18+)
+- Node.js (v16+ minimum, v18+ recommended)
 - npm or yarn
 
 ## Getting Started
@@ -55,8 +57,15 @@ The server will run on `http://localhost:4000`
 ### Server
 
 - Node.js + TypeScript
-- WebSocket/HTTP API for collaboration
-- File-based or in-memory persistence
+- HTTP API for collaboration (polling-based)
+- File-based persistence
+- Modular architecture (DAO/Controller separation)
+- Feature-based modules structure
+
+### Code Quality
+
+- ESLint + Prettier for both client and server
+- Husky with lint-staged for pre-commit hooks
 
 ## Implementation Status
 
@@ -71,7 +80,7 @@ The server will run on `http://localhost:4000`
 - [x] Backend API endpoints for collaboration
 - [x] Step synchronization between clients
 - [x] Document state catch-up on reload
-- [x] Debounce the sending of steps (optional)
+- [x] Debounced sending of steps (300ms delay)
 
 ### FEATURE-3: Persistence
 
@@ -98,9 +107,17 @@ The server will run on `http://localhost:4000`
 
 For horizontal scaling with multiple servers:
 
-- **Redis**: Real-time collaboration data
-- **PostgreSQL/MongoDB**: Historical step storage
-- **Message Queue**: Inter-server communication
+I used simple file storage for the prototype since performance wasn't a priority here. But in production, writing every step to disk would create bottlenecks and fail with multiple concurrent editors. Plus, with horizontal scaling, each server would have its own file copy, leading to inconsistent document states. I'd use PostgreSQL since it provides ACID transactions and strict ordering essential for collaborative editing, while NoSQL databases have eventual consistency issues that can break step ordering. With proper indexing on document ID and version, you get reliable step storage and fast history lookups. For high-traffic documents, adding Redis to cache recent steps would help. The main scaling challenge is ensuring steps are processed in order across multiple servers: you'd need coordination or database constraints to reject out-of-order steps.
+
+## Architecture Decisions
+
+### REST API vs WebSockets
+
+I chose HTTP polling following ProseMirror's collab documentation approach: it's simpler and avoids reconnection complexity. The 1-second polling works well for collaborative editing. WebSockets can be added later for instant updates and reduced server load with many concurrent users.
+
+### Collaboration Approach
+
+Used ProseMirror's collab plugin (operational transformation) as per requirements instead of TipTap's Yjs collaboration.
 
 ## Notes
 
