@@ -1,4 +1,4 @@
-# Cadmus Collaborative Editor
+# CoWrite - Real-time Collaborative Document Editor
 
 A real-time collaborative text editor built with ProseMirror/TipTap and a backend API for operational transformation-based collaboration.
 
