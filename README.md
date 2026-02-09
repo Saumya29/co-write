@@ -1,124 +1,145 @@
-# CoWrite - Real-time Collaborative Document Editor
+# ✍️ CoWrite
 
-A real-time collaborative text editor built with ProseMirror/TipTap and a backend API for operational transformation-based collaboration.
+**Real-time collaborative document editor** — Google Docs-style editing powered by ProseMirror's operational transformation.
 
-## Project Structure
+🔗 **[Live Demo](https://co-write-six.vercel.app)** · [API Server](https://co-write-production.up.railway.app/health)
 
-```
-cadmus-editor/
-├── client/          # React + TypeScript + TipTap editor
-│   └── README.md    # Detailed client implementation docs
-└── server/          # Backend API server (TypeScript/Node.js)
-    └── PERSISTENCE_SETUP.md  # Persistence testing guide
-```
+---
 
-## Features
+## ✨ Features
 
-- **Rich Text Editor**: Full-featured text editor using TipTap (ProseMirror-based)
-- **Live Word Counter**: Real-time word count display
-- **Real-time Collaboration**: Multiple users can edit the same document simultaneously
-- **Persistence**: Document state and steps are saved across server restarts
+- **Rich Text Editing** — Full formatting with TipTap (bold, italic, headings, lists, links, images)
+- **Real-time Collaboration** — Multiple users editing simultaneously with conflict resolution
+- **Live Word Count** — Character and word statistics updated in real-time
+- **Persistence** — Documents survive server restarts
+- **Operational Transformation** — ProseMirror's battle-tested collab algorithm
 
-## Requirements
+## 🛠 Tech Stack
 
-- Node.js (v16+ minimum, v18+ recommended)
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React, TypeScript, TipTap, Vite |
+| **Backend** | Node.js, Express, TypeScript |
+| **Collaboration** | ProseMirror collab plugin (OT-based) |
+| **Deployment** | Vercel (client), Railway (server) |
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
 - npm or yarn
 
-## Getting Started
-
-### Client Setup
+### Local Development
 
 ```bash
-cd client
-npm install
-npm run dev
-```
+# Clone the repo
+git clone https://github.com/Saumya29/co-write.git
+cd co-write
 
-The client will run on `http://localhost:3000`
-
-### Server Setup
-
-```bash
+# Start the server
 cd server
 npm install
 npm run dev
+# → http://localhost:4000
+
+# Start the client (new terminal)
+cd client
+npm install
+npm run dev
+# → http://localhost:3000
 ```
 
-The server will run on `http://localhost:4000`
+Open multiple browser tabs to test collaboration!
 
-## Development
+## 📁 Project Structure
 
-### Client
+```
+co-write/
+├── client/                 # React + TipTap frontend
+│   ├── src/
+│   │   ├── components/     # Editor, Toolbar, MenuBar
+│   │   ├── hooks/          # useCollaboration, useEditor
+│   │   ├── api/            # Collaboration API client
+│   │   └── lib/            # Utilities
+│   └── README.md
+│
+├── server/                 # Express backend
+│   ├── src/
+│   │   ├── modules/        # Feature modules
+│   │   │   └── collaboration/
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   └── data/               # Persistence (state.json)
+│
+└── README.md
+```
 
-- Built with React + TypeScript
-- Uses TipTap editor framework (ProseMirror-based)
-- Vite for development and building
+## 🔌 API Reference
 
-### Server
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/api/version` | GET | Get current document version |
+| `/api/events?version={n}` | GET | Get steps since version n |
+| `/api/events` | POST | Submit new steps |
 
-- Node.js + TypeScript
-- HTTP API for collaboration (polling-based)
-- File-based persistence
-- Modular architecture (DAO/Controller separation)
-- Feature-based modules structure
+### POST `/api/events` Body
+```json
+{
+  "version": 5,
+  "steps": [...],
+  "clientID": "abc123"
+}
+```
 
-### Code Quality
+## 🏗 Architecture
 
-- ESLint + Prettier for both client and server
-- Husky with lint-staged for pre-commit hooks
+### Why HTTP Polling over WebSockets?
 
-## Implementation Status
+Following ProseMirror's official collab example — HTTP polling is simpler, avoids reconnection complexity, and works well for collaborative editing. The 1-second polling interval provides near-real-time updates. WebSockets can be added later for lower latency.
 
-### FEATURE-1: Online Editing Environment
+### Why Operational Transformation?
 
-- [x] TipTap editor with rich text capabilities
-- [x] Live word counter
+ProseMirror's OT algorithm handles concurrent edits gracefully. When two users type simultaneously, their changes are transformed to maintain consistency across all clients.
 
-### FEATURE-2: Collaboration
+### Scaling Considerations
 
+**Current:** File-based persistence (`server/data/state.json`) — great for prototypes.
+
+**Production path:**
+- PostgreSQL for ACID transactions and ordered step storage
+- Redis for caching recent steps
+- Database constraints to enforce step ordering across multiple servers
+
+## 🎯 Implementation Checklist
+
+- [x] TipTap editor with rich text formatting
+- [x] Live word/character counter
 - [x] ProseMirror collab plugin integration
-- [x] Backend API endpoints for collaboration
 - [x] Step synchronization between clients
 - [x] Document state catch-up on reload
-- [x] Debounced sending of steps (300ms delay)
+- [x] Debounced step sending (300ms)
+- [x] File-based persistence
+- [x] Automatic state recovery on startup
+- [ ] User cursors/presence
+- [ ] Multiple documents
+- [ ] User authentication
 
-### FEATURE-3: Persistence
+## 🚢 Deployment
 
-- [x] Step storage across server restarts (file-based: `server/data/state.json`)
-- [x] Ordered step validation
-- [x] Automatic state recovery on server startup
+### Client (Vercel)
+1. Import repo on [vercel.com](https://vercel.com)
+2. Set **Root Directory** to `client`
+3. Set **Framework** to `Vite`
+4. Add env: `VITE_API_URL=https://your-server.railway.app/api`
 
-## API Endpoints
+### Server (Railway)
+1. Create project on [railway.app](https://railway.app)
+2. Connect GitHub repo
+3. Set **Root Directory** to `server`
+4. Build: `npm install && npm run build`
+5. Start: `npm start`
 
-- `GET /api/events?version={n}` - Get steps since version n
-- `POST /api/events` - Submit new steps (body: {version, steps, clientID})
-- `GET /api/version` - Get current version
-- `GET /health` - Health check
+---
 
-## Persistence & Scaling
-
-### Current Implementation
-
-- File-based persistence (`server/data/state.json`)
-- Steps survive server restarts
-- Single server architecture
-
-### Production Recommendations
-
-For horizontal scaling with multiple servers:
-
-I used simple file storage for the prototype since performance wasn't a priority here. But in production, writing every step to disk would create bottlenecks and fail with multiple concurrent editors. Plus, with horizontal scaling, each server would have its own file copy, leading to inconsistent document states. I'd use PostgreSQL since it provides ACID transactions and strict ordering essential for collaborative editing, while NoSQL databases have eventual consistency issues that can break step ordering. With proper indexing on document ID and version, you get reliable step storage and fast history lookups. For high-traffic documents, adding Redis to cache recent steps would help. The main scaling challenge is ensuring steps are processed in order across multiple servers: you'd need coordination or database constraints to reject out-of-order steps.
-
-## Architecture Decisions
-
-### REST API vs WebSockets
-
-I chose HTTP polling following ProseMirror's collab documentation approach: it's simpler and avoids reconnection complexity. The 1-second polling works well for collaborative editing. WebSockets can be added later for instant updates and reduced server load with many concurrent users.
-
-### Collaboration Approach
-
-Used ProseMirror's collab plugin (operational transformation) as per requirements instead of TipTap's Yjs collaboration.
-
-## Notes
-
-This project implements collaborative editing using ProseMirror's operational transformation algorithm. The backend focuses on ordered storage and replay of steps without recreating ProseMirror state on the server.
+Built by [Saumya Tiwari](https://github.com/Saumya29)
