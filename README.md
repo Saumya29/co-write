@@ -4,6 +4,12 @@
 
 🔗 **[Live Demo](https://co-write-six.vercel.app)** · [API Server](https://co-write-production.up.railway.app/health)
 
+## Demo
+
+<video src="demo.mp4" width="100%" autoplay loop muted playsinline></video>
+
+![Demo](demo.gif)
+
 ---
 
 ## ✨ Features
