@@ -60,9 +60,6 @@ import {useWindowSize} from '@/hooks/use-window-size';
 import {useCursorVisibility} from '@/hooks/use-cursor-visibility';
 import {useCollaboration} from '@/hooks/use-collaboration';
 
-// --- Components ---
-import {ThemeToggle} from '@/components/tiptap-templates/simple/theme-toggle';
-
 // --- Lib ---
 import {handleImageUpload, MAX_FILE_SIZE} from '@/lib/tiptap-utils';
 import {generateClientID} from '@/utils/collaboration';
@@ -137,12 +134,6 @@ const MainToolbarContent = ({
       </ToolbarGroup>
 
       <Spacer />
-
-      {isMobile && <ToolbarSeparator />}
-
-      <ToolbarGroup>
-        <ThemeToggle />
-      </ToolbarGroup>
     </>
   );
 };
@@ -232,7 +223,7 @@ export function SimpleEditor({onWordCountChange}: SimpleEditorProps) {
         onError: error => console.error('Upload failed:', error),
       }),
       Placeholder.configure({
-        placeholder: 'Write something …',
+        placeholder: 'Start writing…',
       }),
       CharacterCount.configure({
         mode: 'textSize',

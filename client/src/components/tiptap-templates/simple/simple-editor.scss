@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 body {
   --tt-toolbar-height: 44px;
@@ -51,43 +51,51 @@ body,
 }
 
 .tiptap.ProseMirror {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .simple-editor-wrapper {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: auto;
+  background-color: var(--tt-bg-color);
 }
 
 .simple-editor-content {
-  max-width: 648px;
-  width: calc(100% - 40px);
-  margin: 20px auto 100px;
-  min-height: calc(100vh - 100px);
+  max-width: 680px;
+  width: calc(100% - 48px);
+  margin: 40px auto 120px;
+  min-height: calc(100vh - 160px);
   display: flex;
   flex-direction: column;
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-
-  .dark & {
-    background-color: var(--tt-bg-color-dark, #1a1a1a);
-    border-color: #444;
-  }
+  background-color: var(--tt-bg-color);
 }
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
-  padding: 3rem;
+  padding: 0;
   position: relative;
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: -0.005em;
+  color: var(--tt-gray-light-900);
+
+  .dark & {
+    color: var(--tt-gray-dark-900);
+  }
+
   .is-empty:not(.is-editor-empty)::before {
     display: none !important;
   }
 }
 
 @media screen and (max-width: 480px) {
+  .simple-editor-content {
+    width: calc(100% - 32px);
+    margin: 24px auto 80px;
+  }
+
   .simple-editor-content .tiptap.ProseMirror.simple-editor {
-    padding: 1rem 1.5rem 30vh;
+    padding: 0 0 30vh;
   }
 }
