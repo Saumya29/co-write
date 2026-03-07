@@ -10,21 +10,21 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--tt-bg-color);
 }
 
 .app-header {
-  background-color: var(--tt-bg-color, #fff);
-  border-bottom: 1px solid var(--tt-border-color, #e0e0e0);
+  background-color: var(--tt-bg-color);
+  border-bottom: 1px solid var(--tt-border-color);
   flex-shrink: 0;
-}
-
-.dark .app-header {
-  background-color: var(--tt-bg-color-dark, #1a1a1a);
-  border-bottom-color: var(--tt-border-color-dark, #333);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .header-content {
-  padding: 12px 40px;
+  padding: 0 40px;
+  height: 52px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,52 +32,55 @@
 
 .app-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--tt-text-color, #202124);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--tt-gray-light-900);
+
+  .dark & {
+    color: var(--tt-gray-dark-900);
+  }
 }
 
-.dark .app-title {
-  color: var(--tt-text-color-dark, #e8e8e8);
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  flex-shrink: 0;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .word-count {
-  color: var(--tt-text-secondary, #5f6368);
-  font-size: 14px;
-  font-weight: 500;
-}
+  color: var(--tt-gray-light-500);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 
-.dark .word-count {
-  color: var(--tt-text-secondary-dark, #9ca3af);
-}
-
-.divider {
-  color: var(--tt-text-secondary, #5f6368);
-  font-size: 14px;
-  padding: 0 4px;
-}
-
-.dark .divider {
-  color: var(--tt-text-secondary-dark, #9ca3af);
-}
-
-.document-status {
-  color: var(--tt-text-secondary, #5f6368);
-  font-size: 14px;
-}
-
-.dark .document-status {
-  color: var(--tt-text-secondary-dark, #9ca3af);
+  .dark & {
+    color: var(--tt-gray-dark-500);
+  }
 }
 
 .editor-container {
   flex: 1;
   overflow: hidden;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 52px);
+}
+
+@media (max-width: 600px) {
+  .header-content {
+    padding: 0 20px;
+  }
 }
