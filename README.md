@@ -2,7 +2,7 @@
 
 **Real-time collaborative document editor** — Google Docs-style editing powered by ProseMirror's operational transformation.
 
-🔗 **[Live Demo](https://write.saumyat.com)** · [API Server](https://co-write-production.up.railway.app/health)
+🔗 **[Live Demo](https://write.saumyat.com)**
 
 This prototype has one public shared document. Use fictional text only. It does not yet have private documents, authentication, or shared cursors. Synchronization polls every second; the status indicator shows whether edits are confirmed by the server.
 
