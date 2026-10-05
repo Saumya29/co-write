@@ -241,7 +241,7 @@ export function SimpleEditor({onWordCountChange}: SimpleEditorProps) {
     overlayHeight: toolbarRef.current?.getBoundingClientRect().height ?? 0,
   });
 
-  useCollaboration(editor, clientID);
+  const syncStatus = useCollaboration(editor, clientID);
 
   React.useEffect(() => {
     if (!isMobile && mobileView !== 'main') {
@@ -266,6 +266,7 @@ export function SimpleEditor({onWordCountChange}: SimpleEditorProps) {
 
   return (
     <div className="simple-editor-wrapper">
+      <p role="status" style={{textAlign: 'center', padding: '8px', fontSize: '12px'}}>{syncStatus} · Public shared demo. Use sample text only.</p>
       <EditorContext.Provider value={{editor}}>
         <Toolbar
           ref={toolbarRef}

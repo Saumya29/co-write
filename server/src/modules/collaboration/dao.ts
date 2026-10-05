@@ -1,6 +1,9 @@
 import {loadState as loadFromFile, saveState as saveToFile, type State} from './storage.js';
 
 let state: State | null = null;
+let writeQueue: Promise<void> = Promise.resolve();
+
+export class VersionConflict extends Error {}
 
 export async function initialize(): Promise<void> {
   state = await loadFromFile();
@@ -8,36 +11,37 @@ export async function initialize(): Promise<void> {
 }
 
 async function getState(): Promise<State> {
-  if (!state) {
-    state = await loadFromFile();
-  }
+  if (!state) state = await loadFromFile();
   return state;
 }
 
-async function saveState(newState: State): Promise<void> {
-  state = newState;
-  await saveToFile(newState);
-}
-
 export async function getVersion(): Promise<number> {
-  const currentState = await getState();
-  return currentState.version;
+  return (await getState()).version;
 }
 
-export async function getEvents(
-  fromVersion: number
-): Promise<{steps: unknown[]; clientIDs: string[]}> {
-  const currentState = await getState();
-  return {
-    steps: currentState.steps.slice(fromVersion),
-    clientIDs: currentState.stepClientIDs.slice(fromVersion),
-  };
+export async function getEvents(fromVersion: number): Promise<{steps: unknown[]; clientIDs: string[]}> {
+  const current = await getState();
+  return {steps: current.steps.slice(fromVersion), clientIDs: current.stepClientIDs.slice(fromVersion)};
 }
 
-export async function appendEvents(steps: unknown[], clientIDs: string[]): Promise<void> {
-  const currentState = await getState();
-  currentState.steps.push(...steps);
-  currentState.stepClientIDs.push(...clientIDs);
-  currentState.version += steps.length;
-  await saveState(currentState);
+// Checking the version and committing the steps must be one operation. A stale
+// client gets a conflict, pulls the winner's steps, and rebases before retrying.
+export function appendEvents(expectedVersion: number, steps: unknown[], clientIDs: string[]): Promise<number> {
+  const operation = writeQueue.then(async () => {
+    const current = await getState();
+    if (expectedVersion !== current.version) {
+      throw new VersionConflict(`Version mismatch: expected ${current.version}, got ${expectedVersion}`);
+    }
+    const next: State = {
+      version: current.version + steps.length,
+      steps: [...current.steps, ...steps],
+      stepClientIDs: [...current.stepClientIDs, ...clientIDs],
+    };
+    await saveToFile(next);
+    state = next;
+    return next.version;
+  });
+  // A failed write must not poison the queue or publish unpersisted state.
+  writeQueue = operation.then(() => undefined, () => undefined);
+  return operation;
 }

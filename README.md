@@ -2,7 +2,9 @@
 
 **Real-time collaborative document editor** — Google Docs-style editing powered by ProseMirror's operational transformation.
 
-🔗 **[Live Demo](https://co-write-six.vercel.app)** · [API Server](https://co-write-production.up.railway.app/health)
+🔗 **[Live Demo](https://write.saumyat.com)** · [API Server](https://co-write-production.up.railway.app/health)
+
+This prototype has one public shared document. Use fictional text only. It does not yet have private documents, authentication, or shared cursors. Synchronization polls every second; the status indicator shows whether edits are confirmed by the server.
 
 ## Demo
 
@@ -34,6 +36,8 @@
 ### Prerequisites
 - Node.js 18+
 - npm or yarn
+
+Run `npm test` in `server` for concurrent-write and persistence regression tests.
 
 ### Local Development
 
@@ -110,7 +114,7 @@ ProseMirror's OT algorithm handles concurrent edits gracefully. When two users t
 
 ### Scaling Considerations
 
-**Current:** File-based persistence (`server/data/state.json`) — great for prototypes.
+**Current:** File-based persistence (`server/data/state.json`) with serialized version checks and atomic file replacement. Run one server process; multiple replicas require a transactional database.
 
 **Production path:**
 - PostgreSQL for ACID transactions and ordered step storage

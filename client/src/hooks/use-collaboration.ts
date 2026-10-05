@@ -1,107 +1,71 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useState} from 'react';
 import {Editor} from '@tiptap/react';
 import {sendableSteps, receiveTransaction, getVersion} from 'prosemirror-collab';
 import {Step} from 'prosemirror-transform';
 import * as api from '@/api/collaboration';
 import {isErrorWithStatus} from '@/types/collaboration';
 
+type SyncStatus = 'Connecting…' | 'Synced' | 'Saving…' | 'Offline — edits remain in this tab';
+
 export function useCollaboration(editor: Editor | null, clientID: string) {
-  const isPollingRef = useRef(false);
-  const sendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const hasInitializedRef = useRef(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [status, setStatus] = useState<SyncStatus>('Connecting…');
 
   useEffect(() => {
     if (!editor) return;
+    let disposed = false;
+    let syncing = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const active = () => !disposed && !editor.isDestroyed;
 
-    const applySteps = (steps: unknown[], clientIDs: string[]) => {
-      const {state, view} = editor;
-      const validSteps = [];
-
-      for (const stepData of steps) {
-        try {
-          validSteps.push(Step.fromJSON(state.schema, stepData));
-        } catch (e) {
-          console.error('Invalid step, skipping:', e);
-        }
-      }
-
-      if (validSteps.length > 0) {
-        const transaction = receiveTransaction(
-          state,
-          validSteps,
-          clientIDs.slice(0, validSteps.length),
-          {mapSelectionBackward: true}
-        );
-        view.dispatch(transaction);
-      }
-    };
-
-    const sendSteps = async () => {
-      const sendable = sendableSteps(editor.state);
-      if (!sendable) return;
-
-      try {
-        await api.postEvents(
-          sendable.version,
-          sendable.steps?.map(s => s.toJSON()) || [],
-          clientID
-        );
-      } catch (error) {
-        if (isErrorWithStatus(error) && error.status === 409) {
-          await pullSteps();
-        } else {
-          console.error('Failed to send steps:', error);
-        }
-      }
-    };
-
-    const debouncedSendSteps = () => {
-      if (sendTimeoutRef.current) clearTimeout(sendTimeoutRef.current);
-      sendTimeoutRef.current = setTimeout(sendSteps, 300);
-    };
-
-    const pullSteps = async (fromVersion?: number) => {
-      if (isPollingRef.current) return;
-      isPollingRef.current = true;
-
-      try {
-        const version = fromVersion ?? getVersion(editor.state);
-        const events = await api.fetchEvents(version);
-
-        if (events.steps?.length > 0) {
-          applySteps(events.steps, events.clientIDs);
-        }
-      } catch (error) {
-        console.error('Failed to pull steps:', error);
-      } finally {
-        isPollingRef.current = false;
-      }
+    const pullSteps = async () => {
+      const events = await api.fetchEvents(getVersion(editor.state));
+      if (!active()) return;
+      if (events.steps.length !== events.clientIDs.length) throw new Error('Invalid step history');
+      // Never skip an invalid step: doing so would corrupt version/client alignment.
+      const steps = events.steps.map(step => Step.fromJSON(editor.schema, step));
+      if (steps.length) editor.view.dispatch(receiveTransaction(editor.state, steps, events.clientIDs, {mapSelectionBackward: true}));
     };
 
     const sync = async () => {
-      await pullSteps();
-      debouncedSendSteps();
+      if (!active() || syncing) return;
+      syncing = true;
+      try {
+        await pullSteps();
+        if (!active()) return;
+        const pending = sendableSteps(editor.state);
+        if (pending) {
+          setStatus('Saving…');
+          try {
+            await api.postEvents(pending.version, pending.steps.map(step => step.toJSON()), clientID);
+          } catch (error) {
+            if (!isErrorWithStatus(error) || error.status !== 409) throw error;
+            // A concurrent writer won. Pull and rebase; retry on the next sync.
+          }
+          if (active()) await pullSteps();
+        }
+        if (active()) setStatus(sendableSteps(editor.state) ? 'Saving…' : 'Synced');
+      } catch (error) {
+        if (active()) setStatus('Offline — edits remain in this tab');
+        console.error('Collaboration sync failed:', error);
+      } finally {
+        syncing = false;
+      }
     };
 
-    // Only initialize once
-    if (!hasInitializedRef.current) {
-      hasInitializedRef.current = true;
-      pullSteps(0).then(() => {
-        intervalRef.current = setInterval(sync, 1000);
-      });
-    }
-  }, [editor, clientID]);
-
-  // Cleanup effect: only runs on unmount
-  useEffect(() => {
+    const onUpdate = () => {
+      setStatus('Saving…');
+      clearTimeout(timeout);
+      timeout = setTimeout(sync, 300);
+    };
+    editor.on('update', onUpdate);
+    void sync();
+    const interval = setInterval(sync, 1000);
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      if (sendTimeoutRef.current) {
-        clearTimeout(sendTimeoutRef.current);
-      }
+      disposed = true;
+      clearInterval(interval);
+      clearTimeout(timeout);
+      editor.off('update', onUpdate);
     };
-  }, []);
+  }, [editor, clientID]);
+  return status;
 }

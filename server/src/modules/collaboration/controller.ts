@@ -3,10 +3,10 @@ import * as dao from './dao.js';
 
 export async function getEvents(req: Request, res: Response) {
   try {
-    const fromVersion = Number(req.query.version) || 0;
+    const fromVersion = Number(req.query.version ?? 0);
     const currentVersion = await dao.getVersion();
 
-    if (fromVersion < 0 || fromVersion > currentVersion) {
+    if (!Number.isInteger(fromVersion) || fromVersion < 0 || fromVersion > currentVersion) {
       return res.status(400).json({error: `Invalid version: ${fromVersion}`});
     }
 
@@ -30,32 +30,15 @@ export async function postEvents(req: Request, res: Response) {
   try {
     const {version: clientVersion, steps: clientSteps, clientID} = req.body;
 
-    if (clientVersion === undefined || !Array.isArray(clientSteps) || !clientID) {
+    if (!Number.isInteger(clientVersion) || clientVersion < 0 || !Array.isArray(clientSteps) || !clientSteps.length || typeof clientID !== 'string' || !clientID.trim()) {
       return res.status(422).json({error: 'Invalid input: version, steps, and clientID required'});
     }
 
-    const currentVersion = await dao.getVersion();
-
-    if (clientVersion !== currentVersion) {
-      console.log(`Version mismatch: server=${currentVersion}, client=${clientVersion}`);
-      return res.status(409).json({
-        error: `Version mismatch: expected ${currentVersion}, got ${clientVersion}`,
-      });
-    }
-
     const clientIDs = new Array(clientSteps.length).fill(clientID);
-
-    console.log(
-      `Adding ${clientSteps.length} steps from ${clientID}, new version: ${currentVersion + clientSteps.length}`
-    );
-    if (clientSteps.length > 0) {
-      console.log('Step sample:', JSON.stringify(clientSteps[0]).substring(0, 200));
-    }
-
-    await dao.appendEvents(clientSteps, clientIDs);
-
-    res.json({version: currentVersion + clientSteps.length});
+    const version = await dao.appendEvents(clientVersion, clientSteps, clientIDs);
+    res.json({version});
   } catch (error: any) {
+    if (error instanceof dao.VersionConflict) return res.status(409).json({error: error.message});
     res.status(500).json({error: error.message});
   }
 }
